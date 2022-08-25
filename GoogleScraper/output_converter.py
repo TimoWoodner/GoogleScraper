@@ -20,12 +20,14 @@ csv_fieldnames = sorted(set(Link.__table__.columns._data.keys() + SERP.__table__
 
 logger = logging.getLogger(__name__)
 
+output_data = []
+
 
 class JsonStreamWriter():
     """Writes consecutive objects to an json output file."""
 
     def __init__(self, filename):
-        self.file = open(filename, 'wt')
+        self.file = open(filename, 'wt+')
         self.file.write('[')
         self.last_object = None
 
@@ -34,6 +36,9 @@ class JsonStreamWriter():
             self.file.write(',')
         json.dump(obj, self.file, indent=2, sort_keys=True)
         self.last_object = id(obj)
+
+    def read(self):
+        return json.load(self.file)
 
     def end(self):
         self.file.write(']')
@@ -48,7 +53,7 @@ class CsvStreamWriter():
         # every row in the csv output file should contain all fields
         # that are in the table definition. Except the id, they have the
         # same name in both tables
-        self.file = open(filename, 'wt', encoding='utf-8')
+        self.file = open(filename, 'wt+', encoding='utf-8')
         self.dict_writer = csv.DictWriter(self.file, fieldnames=csv_fieldnames, delimiter=',')
         self.dict_writer.writeheader()
 
@@ -59,6 +64,9 @@ class CsvStreamWriter():
             d.update(row)
             d = ({k: v if type(v) is str else v for k, v in d.items() if k in csv_fieldnames})
             self.dict_writer.writerow(d)
+
+    def read(self):
+        return csv.DictReader(self.file)
 
     def end(self):
         self.file.close()
@@ -103,13 +111,15 @@ def store_serp_result(serp, config):
     Args:
         serp: A serp object
     """
-    global outfile, output_format
+    global outfile, output_format, output_data
 
     if outfile:
         data = row2dict(serp)
         data['results'] = []
         for link in serp.links:
             data['results'].append(row2dict(link))
+            
+        output_data = data['results']
 
         if output_format == 'json':
             # The problem here is, that we need to stream write the json data.
@@ -131,6 +141,11 @@ def row2dict(obj):
 
     return d
 
+def read_outfile():
+    """
+    Return the search data
+    """
+    return output_data
 
 def close_outfile():
     """
@@ -139,3 +154,4 @@ def close_outfile():
     global outfile
     if output_format in ('json', 'csv'):
         outfile.end()
+

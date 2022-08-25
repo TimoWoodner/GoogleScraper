@@ -7,6 +7,7 @@ import sys
 import hashlib
 import os
 import queue
+from unittest import result
 from GoogleScraper.log import setup_logger
 from GoogleScraper.commandline import get_command_line
 from GoogleScraper.database import ScraperSearch, SERP, Link, get_session, fixtures
@@ -466,7 +467,8 @@ def main(return_results=False, parse_cmd_line=True, config_from_dict=None):
         else:
             raise Exception('No such scrape_method {}'.format(config.get('scrape_method')))
 
-    from GoogleScraper.output_converter import close_outfile
+    from GoogleScraper.output_converter import close_outfile, read_outfile
+    results = read_outfile()
     close_outfile()
 
     scraper_search.stopped_searching = datetime.datetime.utcnow()
@@ -474,4 +476,4 @@ def main(return_results=False, parse_cmd_line=True, config_from_dict=None):
     session.commit()
 
     if return_results:
-        return scraper_search
+        return results
