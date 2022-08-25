@@ -355,26 +355,26 @@ class GoogleParser(Parser):
             'us_ip': {
                 'container': '#center_col',
                 'result_container': 'div.g ',
-                'link': 'div.r > a:first-child::attr(href)',
+                'link': 'a:first-child::attr(href)',
                 'snippet': 'div.s span.st::text',
                 'title': 'div.r > a > h3::text',
                 'visible_link': 'cite::text'
             },
-            'de_ip': {
-                'container': '#center_col',
-                'result_container': 'li.g ',
-                'link': 'h3.r > a:first-child::attr(href)',
-                'snippet': 'div.s span.st::text',
-                'title': 'h3.r > a:first-child::text',
-                'visible_link': 'cite::text'
-            },
-            'de_ip_news_items': {
-                'container': 'li.card-section',
-                'link': 'a._Dk::attr(href)',
-                'snippet': 'span._dwd::text',
-                'title': 'a._Dk::text',
-                'visible_link': 'cite::text'
-            },
+            # 'de_ip': {
+            #     'container': '#center_col',
+            #     'result_container': 'li.g ',
+            #     'link': 'h3.r > a:first-child::attr(href)',
+            #     'snippet': 'div.s span.st::text',
+            #     'title': 'h3.r > a:first-child::text',
+            #     'visible_link': 'cite::text'
+            # },
+            # 'de_ip_news_items': {
+            #     'container': 'li.card-section',
+            #     'link': 'a._Dk::attr(href)',
+            #     'snippet': 'span._dwd::text',
+            #     'title': 'a._Dk::text',
+            #     'visible_link': 'cite::text'
+            # },
         },
         'ads_main': {
             'us_ip': {

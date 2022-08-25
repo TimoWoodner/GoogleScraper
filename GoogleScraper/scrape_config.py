@@ -314,7 +314,7 @@ browser_mode = 'headless'
 
 # chrome driver executable path
 # get chrome drivers here: https://chromedriver.storage.googleapis.com/index.html?path=2.41/
-chromedriver_path = '/home/nikolai/projects/private/Drivers/chromedriver'
+chromedriver_path = 'D://Task//scrapper//GoogleScrapper//chromedriver.exe'
 
 # geckodriver executable path
 # get gecko drivers here: https://github.com/mozilla/geckodriver/releases

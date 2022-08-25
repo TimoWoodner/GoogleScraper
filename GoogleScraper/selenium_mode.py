@@ -225,7 +225,7 @@ class SelScrape(SearchEngineScrape, threading.Thread):
         """
         assert tab_number < self.number_of_tabs
 
-        first_link = first_result.find_element_by_tag_name('a')
+        first_link = first_result.find_element(By.TAG_NAME, 'a')
 
         # Save the window opener (current window, do not mistaken with tab... not the same)
         main_window = browser.current_window_handle
@@ -235,7 +235,7 @@ class SelScrape(SearchEngineScrape, threading.Thread):
         first_link.send_keys(Keys.CONTROL + Keys.RETURN)
 
         # Switch tab to the new tab, which we will assume is the next one on the right
-        browser.find_element_by_tag_name('body').send_keys(Keys.CONTROL + Keys.TAB)
+        browser.find_element(By.TAG_NAME, 'body').send_keys(Keys.CONTROL + Keys.TAB)
 
         # Put focus on current window which will, in fact, put focus on the current visible tab
         browser.switch_to_window(main_window)
@@ -244,7 +244,7 @@ class SelScrape(SearchEngineScrape, threading.Thread):
         sleep(2)
 
         # Close current tab
-        browser.find_element_by_tag_name('body').send_keys(Keys.CONTROL + 'w')
+        browser.find_element(By.TAG_NAME, 'body').send_keys(Keys.CONTROL + 'w')
 
         # Put focus on current window which will be the window opener
         browser.switch_to_window(main_window)
@@ -542,7 +542,7 @@ class SelScrape(SearchEngineScrape, threading.Thread):
                         # wait until the next page link emerges
                         WebDriverWait(self.webdriver, 8).until(
                             EC.visibility_of_element_located((By.CSS_SELECTOR, selector)))
-                        element = self.webdriver.find_element_by_css_selector(selector)
+                        element = self.webdriver.find_element(By.CSS_SELECTOR, selector)
                         next_url = element.get_attribute('href')
                         element.click()
                     except WebDriverException:
@@ -575,7 +575,7 @@ class SelScrape(SearchEngineScrape, threading.Thread):
                 logger.warning('{}: Cannot locate next page element: {}'.format(self.name, str(e)))
                 return False
 
-            return self.webdriver.find_element_by_css_selector(selector)
+            return self.webdriver.find_element(By.CSS_SELECTOR, selector)
 
         elif self.search_type == 'image':
             self.page_down()
@@ -838,14 +838,14 @@ class GoogleSelScrape(SelScrape):
 
             try:
                 if self.config.get('google_selenium_safe_search', False):
-                    if self.webdriver.find_element_by_name('safeui').get_attribute('value') != 'on':
-                        self.webdriver.find_element_by_name('safeui').click()
+                    if self.webdriver.find_element(By.NAME, 'safeui').get_attribute('value') != 'on':
+                        self.webdriver.find_element(By.NAME, 'safeui').click()
 
                 try:
                     if self.config.get('google_selenium_personalization', False):
-                        self.webdriver.find_element_by_css_selector('#pson-radio > div:first-child').click()
+                        self.webdriver.find_element(By.CSS_SELECTOR, '#pson-radio > div:first-child').click()
                     else:
-                        self.webdriver.find_element_by_css_selector('#pson-radio > div:nth-child(2)').click()
+                        self.webdriver.find_element(By.CSS_SELECTOR, '#pson-radio > div:nth-child(2)').click()
                 except WebDriverException as e:
                     logger.warning('Cannot set personalization settings.')
 
@@ -853,34 +853,34 @@ class GoogleSelScrape(SelScrape):
 
                 # set the region
                 try:
-                    self.webdriver.find_element_by_id('regionanchormore').click()
+                    self.webdriver.find_element(By.ID, 'regionanchormore').click()
                 except WebDriverException as e:
                     logger.warning('Regions probably already expanded.')
 
                 try:
                     region = self.config.get('google_selenium_region', 'US')
-                    self.webdriver.find_element_by_css_selector('div[data-value="{}"]'.format(region)).click()
+                    self.webdriver.find_element(By.CSS_SELECTOR, 'div[data-value="{}"]'.format(region)).click()
                 except WebDriverException as e:
                     logger.warning('Cannot set region settings.')
 
                 # set the number of results
                 try:
                     num_results = self.config.get('google_selenium_num_results', 10)
-                    self.webdriver.find_element_by_id('result_slider').click()
+                    self.webdriver.find_element(By.ID, 'result_slider').click()
                     # reset
                     for i in range(5):
-                        self.webdriver.find_element_by_id('result_slider').send_keys(Keys.LEFT)
+                        self.webdriver.find_element(By.ID, 'result_slider').send_keys(Keys.LEFT)
                     # move to desicred result
                     for i in range((num_results//10)-1):
                         time.sleep(.25)
-                        self.webdriver.find_element_by_id('result_slider').send_keys(Keys.RIGHT)
+                        self.webdriver.find_element(By.ID, 'result_slider').send_keys(Keys.RIGHT)
                 except WebDriverException as e:
                     logger.warning('Cannot set number of results settings.')
 
                 time.sleep(random.randint(1,4))
 
                 # save settings
-                self.webdriver.find_element_by_css_selector('#form-buttons div:first-child').click()
+                self.webdriver.find_element(By.CSS_SELECTOR, '#form-buttons div:first-child').click()
                 time.sleep(1)
                 # accept alert
                 self.webdriver.switch_to.alert.accept()
