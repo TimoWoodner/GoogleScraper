@@ -728,6 +728,7 @@ class SelScrape(SearchEngineScrape, threading.Thread):
                 except WebDriverException as e:
                     self.html = self.webdriver.page_source
 
+                # save results after search
                 super().after_search()
 
                 # Click the next page link not when leaving the loop
@@ -777,9 +778,13 @@ class SelScrape(SearchEngineScrape, threading.Thread):
         if self.startable:
             self.build_search()
             self.search()
-
+            self.scrape_from_urls()
+        
         if self.webdriver:
             self.webdriver.quit()
+
+    def scrape_from_urls(self):
+        pass
 
 
 """

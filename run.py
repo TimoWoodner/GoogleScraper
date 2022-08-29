@@ -2,23 +2,39 @@
 # -*- coding: utf-8 -*-
 
 """Convenience wrapper for running GoogleScrapper directly from source tree."""
-
+import os
+import time
 from GoogleScraper import scrape_with_config
-from email_finder import EmailFinder
+from GoogleScraper.email_finder import EmailFinder
+
+name = "Phụng Đặng Thị Hải"
+company = "CADDi VIETNAM"
+position = ""
+location = ""
+
+query_key = ["", "contacts", "blog", "twitter", "linkedin", "instagram", "email", "page", "medium"]
 
 def main():
+    keywords = [f"{name} {company} {keyword}" for keyword in query_key]
+
+    start = time.time()
+    output_path = "\\".join([os.path.dirname(os.path.abspath(__file__)), "Outputs\\csv_test.csv"])
+    print(output_path)
+    
     config = {
-            'keyword': 'Daisuke Takei Caddi contacts',
-            'search_engines': ['Google'],
+            'keywords': keywords,
+            'search_engines': ['google'],
             'num_pages_for_keyword': 1,
-            'output_filename': "csv_test.csv",
+            'output_filename': output_path,
             'scrape_method': 'selenium',
             'sel_browser': 'chrome',
             'do_caching': False,
-            'num_workers': 5
+            'num_workers': 10
         }
 
     search_results = scrape_with_config(config)
+    print(search_results.length)
+    
 
     # search_links = ["https://blog.zenprospect.com/people/Kenichi/Sato/60ebde9de3a12e00010da588",
     #                 "https://craft.co/caddi",
@@ -30,15 +46,17 @@ def main():
     #                 "https://twitter.com/ksato9700",
     #                 "https://www.wantedly.com/companies/caddi/members"]
 
-    search_links = []
-    for row in search_results:
-        print(row['link'])
-        search_links.append(row['link'])
+    # search_links = set()
+    # for row in search_results:
+    #     print(row['link'])
+    #     search_links.add(row['link'])
 
-    email_finder = EmailFinder(links=search_links)
-    email_finder.run()
-    print(email_finder.results)
+    # email_finder = EmailFinder(links=search_links)
+    # email_finder.run()
+    # print(email_finder.results)
     
+    end = time.time() - start
+    print("Finished after ", end)
 
 if __name__ == '__main__':
     main()

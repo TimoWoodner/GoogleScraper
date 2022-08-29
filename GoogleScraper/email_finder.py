@@ -3,6 +3,8 @@ import threading
 import time
 import re
 from unittest import result
+from functools import reduce
+
 try:
     from selenium import webdriver
     from selenium.common.exceptions import TimeoutException, WebDriverException
@@ -39,8 +41,9 @@ class EmailFinder():
     browser_mode = "headless" 
     
 
-    def __init__(self, links, *args, **kwargs):
+    def __init__(self, links, info = {}):
         self.links = links
+        self.info = info
         self.user_agent = random_user_agent()
         self.webdriver = self._get_Chrome()
 
@@ -90,12 +93,49 @@ class EmailFinder():
         self.webdriver.get(link)
         els = self.webdriver.find_elements(By.XPATH,"//*[contains(text(),'@')]")
         for el in els:
-            text = str(el.text)
-            print(text)
-            if text and check_valid_email(text):
-                self.results.append(text)
+            text = str(el.text).lower()
+            if text != "": 
+                for word in text.split(" "):
+                    if self.mail_validate(word): 
+                        self.results.append(self.mail_validate(word))
         
     def get_result(self):
         return self.results
+
+    def mail_validate(self, possible_email):
+        if not check_valid_email(possible_email):
+            return False
+
+        email_name = possible_email.split('@')[0]
+        domain_name = possible_email.split('@')[1]
+        accuracy = 0
+
+        if self.info.get('name', False):
+            # split firt name, last name
+            name = self.info.get('name').split(" ")
+            # find the overlap of person name with the email
+            accuracy = reduce(lambda a, b: a + 1 if b in email_name else 0, name)
+            if accuracy < 1:
+                return False
+
+        if "gmail" in domain_name:
+            pass
+        elif "yahoo" in domain_name:
+            pass
+        elif self.info.get('company', False):
+            company_short_name = self.info.get('company').split(" ")[0]
+            if company_short_name in domain_name:
+                accuracy += 1
+            
+        if accuracy < 1:
+            return False 
+        return True
+
+
+
+            
+            
+                
+                    
 
     

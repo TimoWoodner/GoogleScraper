@@ -120,6 +120,8 @@ def store_serp_result(serp, config):
             data['results'].append(row2dict(link))
             
         output_data = data['results']
+        print("===========================================================")
+        print("store data", output_data)
 
         if output_format == 'json':
             # The problem here is, that we need to stream write the json data.
